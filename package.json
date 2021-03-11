@@ -1,0 +1,40 @@
+{
+  "name": "MVP",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "moonbase:deploy": "yarn hardhat run deploy/deploy.js --network moonbase",
+    "moonbase:dev": "yarn hardhat run deploy/deploy.js --network dev",
+    "lint": "yarn prettier && solhint -c .solhint.json contracts/**/*.sol",
+    "export": "yarn hardhat export --export-all exports/deployments.json",
+    "test": "yarn hardhat test --verbose",
+    "build": "yarn hardhat compile",
+    "console": "yarn hardhat console"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DCTDAO/MVP.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DCTDAO/MVP/issues"
+  },
+  "homepage": "https://github.com/DCTDAO/MVP#readme",
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@types/chai": "^4.2.15",
+    "@types/mocha": "^8.2.1",
+    "chai": "^4.3.3",
+    "ethereum-waffle": "^3.3.0",
+    "ethereumjs-util": "^7.0.9",
+    "ethers": "^5.0.32",
+    "hardhat": "^2.1.1",
+    "mocha": "^8.3.1",
+    "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
+  }
+}
