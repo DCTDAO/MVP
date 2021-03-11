@@ -1,3 +1,7 @@
+import { ethers } from "hardhat";
+
+const MaxUint256 = ethers.constants.MaxUint256
+
 async function main() {
     const time = Math.floor(Date.now() / 1000) + 60*60*10;
 	
@@ -38,10 +42,10 @@ async function main() {
 
     console.log("Router address: ", router.address);
 
-    await DCA.approve(router.address, ethers.utils.parseEther('50'));
-    await DCB.approve(router.address, ethers.utils.parseEther('50'));
+    await DCA.approve(router.address, MaxUint256);
+    await DCB.approve(router.address, MaxUint256);
     
-    const amountSwap = ethers.utils.parseEther('5');
+    const amountSwap = ethers.utils.parseEther('5000');
     await router.addLiquidity(DCA.address, DCB.address, amountSwap, amountSwap, 0,0, deployer.address, time);
 }
 

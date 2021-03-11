@@ -1,6 +1,6 @@
 // ethers plugin required to interact with the contract
-require('@nomiclabs/hardhat-ethers');
-
+import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-waffle";
 // private key from the pre-funded Moonbase Alpha testing account
 const { privateKey } = require('./secrets.json');
 
@@ -32,6 +32,9 @@ module.exports = {
 	url: `http://127.0.0.1:9933`,
 	chainId: 1281,
 	accounts: accounts
+    },
+    hardhat: {
+	chainId: 1287
     }
   }
 };
