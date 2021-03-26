@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "moonbase:deploy": "yarn hardhat run deploy/deploy.ts --network moonbase",
+    "binanceTest:deploy": "yarn hardhat run deploy/BNBTESTdeploy.ts --network binanceTestNet",
     "lint": "yarn prettier && solhint -c .solhint.json contracts/**/*.sol",
     "export": "yarn hardhat export --export-all exports/deployments.json",
     "test": "yarn hardhat test --verbose",

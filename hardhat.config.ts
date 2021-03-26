@@ -28,6 +28,11 @@ module.exports = {
       chainId: 1287,
       accounts: accounts  
       },
+    binanceTestNet : {
+      url: `https://data-seed-prebsc-1-s1.binance.org:8545/`,
+      chainId: 97,
+      accounts: accounts
+    },
     dev: {
 	url: `http://127.0.0.1:9933`,
 	chainId: 1281,
