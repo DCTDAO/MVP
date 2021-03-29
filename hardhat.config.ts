@@ -2,7 +2,7 @@
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
 // private key from the pre-funded Moonbase Alpha testing account
-const { privateKey } = require('./secrets.json');
+const { privateKey, ropstenURL } = require('./secrets.json');
 
 const accounts = {
 	mnemonic: privateKey,
@@ -33,6 +33,12 @@ module.exports = {
       chainId: 97,
       accounts: accounts
     },
+    ropsten : {
+      url: ropstenURL,
+      chainId: 3,
+      accounts: accounts
+    },
+
     dev: {
 	url: `http://127.0.0.1:9933`,
 	chainId: 1281,
