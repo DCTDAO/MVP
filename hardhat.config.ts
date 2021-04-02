@@ -38,6 +38,11 @@ module.exports = {
       chainId: 3,
       accounts: accounts
     },
+    operaTestnet: {
+      url: `https://rpc.testnet.fantom.network/`,
+      chainId: 0xfa2,
+      accounts: accounts
+    },
 
     dev: {
 	url: `http://127.0.0.1:9933`,
