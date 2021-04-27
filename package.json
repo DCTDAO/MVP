@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "moonbase:deploy": "yarn hardhat run deploy/deploy.ts --network moonbase",
+    "avaxTest:deploy": "yarn hardhat run deploy/deploy.ts --network avaxTest",
     "binanceTest:deploy": "yarn hardhat run deploy/BNBTESTdeploy.ts --network binanceTestNet",
     "ropsten:deploy": "yarn hardhat run deploy/ropsten.ts --network ropsten",
     "operaTest:deploy": "yarn hardhat run deploy/opera.ts --network operaTestnet",

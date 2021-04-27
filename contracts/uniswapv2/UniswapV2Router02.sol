@@ -8,26 +8,26 @@ import './libraries/TransferHelper.sol';
 import './interfaces/IUniswapV2Router02.sol';
 import './interfaces/IUniswapV2Factory.sol';
 import './interfaces/IERC20.sol';
-import './interfaces/IWGLMR.sol';
+import './interfaces/IWNATIVE.sol';
 
 contract UniswapV2Router02 is IUniswapV2Router02 {
     using SafeMathUniswap for uint;
 
     address public immutable override factory;
-    address public immutable override WGLMR;
+    address public immutable override WNATIVE;
 
     modifier ensure(uint deadline) {
         require(deadline >= block.timestamp, 'UniswapV2Router: EXPIRED');
         _;
     }
 
-    constructor(address _factory, address _WGLMR) public {
+    constructor(address _factory, address _WNATIVE) public {
         factory = _factory;
-        WGLMR = _WGLMR;
+        WNATIVE = _WNATIVE;
     }
 
     receive() external payable {
-        assert(msg.sender == WGLMR); // only accept ETH via fallback from the WGLMR contract
+        assert(msg.sender == WNATIVE); // only accept NATIVE via fallback from the WNATIVE contract
     }
 
     // **** ADD LIQUIDITY ****
@@ -75,29 +75,29 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         TransferHelper.safeTransferFrom(tokenB, msg.sender, pair, amountB);
         liquidity = IUniswapV2Pair(pair).mint(to);
     }
-    function addLiquidityETH(
+    function addLiquidityNATIVE(
         address token,
         uint amountTokenDesired,
         uint amountTokenMin,
-        uint amountETHMin,
+        uint amountNATIVEMin,
         address to,
         uint deadline
-    ) external virtual override payable ensure(deadline) returns (uint amountToken, uint amountETH, uint liquidity) {
-        (amountToken, amountETH) = _addLiquidity(
+    ) external virtual override payable ensure(deadline) returns (uint amountToken, uint amountNATIVE, uint liquidity) {
+        (amountToken, amountNATIVE) = _addLiquidity(
             token,
-            WGLMR,
+            WNATIVE,
             amountTokenDesired,
             msg.value,
             amountTokenMin,
-            amountETHMin
+            amountNATIVEMin
         );
-        address pair = UniswapV2Library.pairFor(factory, token, WGLMR);
+        address pair = UniswapV2Library.pairFor(factory, token, WNATIVE);
         TransferHelper.safeTransferFrom(token, msg.sender, pair, amountToken);
-        IWGLMR(WGLMR).deposit{value: amountETH}();
-        assert(IWGLMR(WGLMR).transfer(pair, amountETH));
+        IWNATIVE(WNATIVE).deposit{value: amountNATIVE}();
+        assert(IWNATIVE(WNATIVE).transfer(pair, amountNATIVE));
         liquidity = IUniswapV2Pair(pair).mint(to);
         // refund dust eth, if any
-        if (msg.value > amountETH) TransferHelper.safeTransferETH(msg.sender, msg.value - amountETH);
+        if (msg.value > amountNATIVE) TransferHelper.safeTransferNATIVE(msg.sender, msg.value - amountNATIVE);
     }
 
     // **** REMOVE LIQUIDITY ****
@@ -118,26 +118,26 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         require(amountA >= amountAMin, 'UniswapV2Router: INSUFFICIENT_A_AMOUNT');
         require(amountB >= amountBMin, 'UniswapV2Router: INSUFFICIENT_B_AMOUNT');
     }
-    function removeLiquidityETH(
+    function removeLiquidityNATIVE(
         address token,
         uint liquidity,
         uint amountTokenMin,
-        uint amountETHMin,
+        uint amountNATIVEMin,
         address to,
         uint deadline
-    ) public virtual override ensure(deadline) returns (uint amountToken, uint amountETH) {
-        (amountToken, amountETH) = removeLiquidity(
+    ) public virtual override ensure(deadline) returns (uint amountToken, uint amountNATIVE) {
+        (amountToken, amountNATIVE) = removeLiquidity(
             token,
-            WGLMR,
+            WNATIVE,
             liquidity,
             amountTokenMin,
-            amountETHMin,
+            amountNATIVEMin,
             address(this),
             deadline
         );
         TransferHelper.safeTransfer(token, to, amountToken);
-        IWGLMR(WGLMR).withdraw(amountETH);
-        TransferHelper.safeTransferETH(to, amountETH);
+        IWNATIVE(WNATIVE).withdraw(amountNATIVE);
+        TransferHelper.safeTransferNATIVE(to, amountNATIVE);
     }
     function removeLiquidityWithPermit(
         address tokenA,
@@ -154,57 +154,57 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
         (amountA, amountB) = removeLiquidity(tokenA, tokenB, liquidity, amountAMin, amountBMin, to, deadline);
     }
-    function removeLiquidityETHWithPermit(
+    function removeLiquidityNATIVEWithPermit(
         address token,
         uint liquidity,
         uint amountTokenMin,
-        uint amountETHMin,
+        uint amountNATIVEMin,
         address to,
         uint deadline,
         bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external virtual override returns (uint amountToken, uint amountETH) {
-        address pair = UniswapV2Library.pairFor(factory, token, WGLMR);
+    ) external virtual override returns (uint amountToken, uint amountNATIVE) {
+        address pair = UniswapV2Library.pairFor(factory, token, WNATIVE);
         uint value = approveMax ? uint(-1) : liquidity;
         IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
-        (amountToken, amountETH) = removeLiquidityETH(token, liquidity, amountTokenMin, amountETHMin, to, deadline);
+        (amountToken, amountNATIVE) = removeLiquidityNATIVE(token, liquidity, amountTokenMin, amountNATIVEMin, to, deadline);
     }
 
     // **** REMOVE LIQUIDITY (supporting fee-on-transfer tokens) ****
-    function removeLiquidityETHSupportingFeeOnTransferTokens(
+    function removeLiquidityNATIVESupportingFeeOnTransferTokens(
         address token,
         uint liquidity,
         uint amountTokenMin,
-        uint amountETHMin,
+        uint amountNATIVEMin,
         address to,
         uint deadline
-    ) public virtual override ensure(deadline) returns (uint amountETH) {
-        (, amountETH) = removeLiquidity(
+    ) public virtual override ensure(deadline) returns (uint amountNATIVE) {
+        (, amountNATIVE) = removeLiquidity(
             token,
-            WGLMR,
+            WNATIVE,
             liquidity,
             amountTokenMin,
-            amountETHMin,
+            amountNATIVEMin,
             address(this),
             deadline
         );
         TransferHelper.safeTransfer(token, to, IERC20Uniswap(token).balanceOf(address(this)));
-        IWGLMR(WGLMR).withdraw(amountETH);
-        TransferHelper.safeTransferETH(to, amountETH);
+        IWNATIVE(WNATIVE).withdraw(amountNATIVE);
+        TransferHelper.safeTransferNATIVE(to, amountNATIVE);
     }
-    function removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
+    function removeLiquidityNATIVEWithPermitSupportingFeeOnTransferTokens(
         address token,
         uint liquidity,
         uint amountTokenMin,
-        uint amountETHMin,
+        uint amountNATIVEMin,
         address to,
         uint deadline,
         bool approveMax, uint8 v, bytes32 r, bytes32 s
-    ) external virtual override returns (uint amountETH) {
-        address pair = UniswapV2Library.pairFor(factory, token, WGLMR);
+    ) external virtual override returns (uint amountNATIVE) {
+        address pair = UniswapV2Library.pairFor(factory, token, WNATIVE);
         uint value = approveMax ? uint(-1) : liquidity;
         IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
-        amountETH = removeLiquidityETHSupportingFeeOnTransferTokens(
-            token, liquidity, amountTokenMin, amountETHMin, to, deadline
+        amountNATIVE = removeLiquidityNATIVESupportingFeeOnTransferTokens(
+            token, liquidity, amountTokenMin, amountNATIVEMin, to, deadline
         );
     }
 
@@ -250,7 +250,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         );
         _swap(amounts, path, to);
     }
-    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
+    function swapExactNATIVEForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
         external
         virtual
         override
@@ -258,48 +258,48 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         ensure(deadline)
         returns (uint[] memory amounts)
     {
-        require(path[0] == WGLMR, 'UniswapV2Router: INVALID_PATH');
+        require(path[0] == WNATIVE, 'UniswapV2Router: INVALID_PATH');
         amounts = UniswapV2Library.getAmountsOut(factory, msg.value, path);
         require(amounts[amounts.length - 1] >= amountOutMin, 'UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT');
-        IWGLMR(WGLMR).deposit{value: amounts[0]}();
-        assert(IWGLMR(WGLMR).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]));
+        IWNATIVE(WNATIVE).deposit{value: amounts[0]}();
+        assert(IWNATIVE(WNATIVE).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]));
         _swap(amounts, path, to);
     }
-    function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
+    function swapTokensForExactNATIVE(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
         external
         virtual
         override
         ensure(deadline)
         returns (uint[] memory amounts)
     {
-        require(path[path.length - 1] == WGLMR, 'UniswapV2Router: INVALID_PATH');
+        require(path[path.length - 1] == WNATIVE, 'UniswapV2Router: INVALID_PATH');
         amounts = UniswapV2Library.getAmountsIn(factory, amountOut, path);
         require(amounts[0] <= amountInMax, 'UniswapV2Router: EXCESSIVE_INPUT_AMOUNT');
         TransferHelper.safeTransferFrom(
             path[0], msg.sender, UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]
         );
         _swap(amounts, path, address(this));
-        IWGLMR(WGLMR).withdraw(amounts[amounts.length - 1]);
-        TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
+        IWNATIVE(WNATIVE).withdraw(amounts[amounts.length - 1]);
+        TransferHelper.safeTransferNATIVE(to, amounts[amounts.length - 1]);
     }
-    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
+    function swapExactTokensForNATIVE(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
         external
         virtual
         override
         ensure(deadline)
         returns (uint[] memory amounts)
     {
-        require(path[path.length - 1] == WGLMR, 'UniswapV2Router: INVALID_PATH');
+        require(path[path.length - 1] == WNATIVE, 'UniswapV2Router: INVALID_PATH');
         amounts = UniswapV2Library.getAmountsOut(factory, amountIn, path);
         require(amounts[amounts.length - 1] >= amountOutMin, 'UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT');
         TransferHelper.safeTransferFrom(
             path[0], msg.sender, UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]
         );
         _swap(amounts, path, address(this));
-        IWGLMR(WGLMR).withdraw(amounts[amounts.length - 1]);
-        TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
+        IWNATIVE(WNATIVE).withdraw(amounts[amounts.length - 1]);
+        TransferHelper.safeTransferNATIVE(to, amounts[amounts.length - 1]);
     }
-    function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
+    function swapNATIVEForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
         external
         virtual
         override
@@ -307,14 +307,14 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         ensure(deadline)
         returns (uint[] memory amounts)
     {
-        require(path[0] == WGLMR, 'UniswapV2Router: INVALID_PATH');
+        require(path[0] == WNATIVE, 'UniswapV2Router: INVALID_PATH');
         amounts = UniswapV2Library.getAmountsIn(factory, amountOut, path);
         require(amounts[0] <= msg.value, 'UniswapV2Router: EXCESSIVE_INPUT_AMOUNT');
-        IWGLMR(WGLMR).deposit{value: amounts[0]}();
-        assert(IWGLMR(WGLMR).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]));
+        IWNATIVE(WNATIVE).deposit{value: amounts[0]}();
+        assert(IWNATIVE(WNATIVE).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]));
         _swap(amounts, path, to);
         // refund dust eth, if any
-        if (msg.value > amounts[0]) TransferHelper.safeTransferETH(msg.sender, msg.value - amounts[0]);
+        if (msg.value > amounts[0]) TransferHelper.safeTransferNATIVE(msg.sender, msg.value - amounts[0]);
     }
 
     // **** SWAP (supporting fee-on-transfer tokens) ****
@@ -354,7 +354,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             'UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT'
         );
     }
-    function swapExactETHForTokensSupportingFeeOnTransferTokens(
+    function swapExactNATIVEForTokensSupportingFeeOnTransferTokens(
         uint amountOutMin,
         address[] calldata path,
         address to,
@@ -366,10 +366,10 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         payable
         ensure(deadline)
     {
-        require(path[0] == WGLMR, 'UniswapV2Router: INVALID_PATH');
+        require(path[0] == WNATIVE, 'UniswapV2Router: INVALID_PATH');
         uint amountIn = msg.value;
-        IWGLMR(WGLMR).deposit{value: amountIn}();
-        assert(IWGLMR(WGLMR).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amountIn));
+        IWNATIVE(WNATIVE).deposit{value: amountIn}();
+        assert(IWNATIVE(WNATIVE).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amountIn));
         uint balanceBefore = IERC20Uniswap(path[path.length - 1]).balanceOf(to);
         _swapSupportingFeeOnTransferTokens(path, to);
         require(
@@ -377,7 +377,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
             'UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT'
         );
     }
-    function swapExactTokensForETHSupportingFeeOnTransferTokens(
+    function swapExactTokensForNATIVESupportingFeeOnTransferTokens(
         uint amountIn,
         uint amountOutMin,
         address[] calldata path,
@@ -389,15 +389,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         override
         ensure(deadline)
     {
-        require(path[path.length - 1] == WGLMR, 'UniswapV2Router: INVALID_PATH');
+        require(path[path.length - 1] == WNATIVE, 'UniswapV2Router: INVALID_PATH');
         TransferHelper.safeTransferFrom(
             path[0], msg.sender, UniswapV2Library.pairFor(factory, path[0], path[1]), amountIn
         );
         _swapSupportingFeeOnTransferTokens(path, address(this));
-        uint amountOut = IERC20Uniswap(WGLMR).balanceOf(address(this));
+        uint amountOut = IERC20Uniswap(WNATIVE).balanceOf(address(this));
         require(amountOut >= amountOutMin, 'UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT');
-        IWGLMR(WGLMR).withdraw(amountOut);
-        TransferHelper.safeTransferETH(to, amountOut);
+        IWNATIVE(WNATIVE).withdraw(amountOut);
+        TransferHelper.safeTransferNATIVE(to, amountOut);
     }
 
     // **** LIBRARY FUNCTIONS ****

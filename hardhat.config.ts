@@ -43,7 +43,11 @@ module.exports = {
       chainId: 0xfa2,
       accounts: accounts
     },
-
+    avaxTest: {
+	url: 'https://api.avax-test.network/ext/bc/C/rpc',
+	chainId: 0xa869,
+	accounts: accounts 
+    },
     dev: {
 	url: `http://127.0.0.1:9933`,
 	chainId: 1281,

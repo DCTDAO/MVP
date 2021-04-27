@@ -8,7 +8,7 @@ async function main() {
     const cRouter = await ethers.getContractFactory("UniswapV2Router02");
     const cMulticall = await ethers.getContractFactory("Multicall");
     const cFactory = await ethers.getContractFactory("UniswapV2Factory");
-    const CWGLMR = await ethers.getContractFactory("WGLMR");
+    const CWETH = await ethers.getContractFactory("WETH");
     const Token = await ethers.getContractFactory("MyERC20");
 
     const [deployer] = await ethers.getSigners();
@@ -28,9 +28,9 @@ async function main() {
     console.log("DCA address: ", DCA.address);
     console.log("DCB address: ", DCB.address);
 
-    const WGLMR = await CWGLMR.deploy();
+    const WETH = await CWETH.deploy();
 
-    console.log("WGLMR address: ", WGLMR.address);
+    console.log("WETH address: ", WETH.address);
 
     const factory = await cFactory.deploy(deployer.address);
 
@@ -38,7 +38,7 @@ async function main() {
     const INIT_HASH = await factory.pairCodeHash();
     console.log("INIT_HASH: ", INIT_HASH);
 
-    const router = await cRouter.deploy(factory.address, WGLMR.address);
+    const router = await cRouter.deploy(factory.address, WETH.address);
 
     console.log("Router address: ", router.address);
 
@@ -46,7 +46,7 @@ async function main() {
     await DCA.approve(router.address, amountSwap);
     await DCB.approve(router.address, amountSwap);
     
-    await router.addLiquidity(DCA.address, DCB.address, amountSwap, amountSwap, 0,0, deployer.address, time, {gasLimit: 30000000});
+    await router.addLiquidity(DCA.address, DCB.address, amountSwap, amountSwap, 0,0, deployer.address, time); 
 }
 
 

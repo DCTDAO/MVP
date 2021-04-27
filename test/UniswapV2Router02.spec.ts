@@ -143,18 +143,18 @@ describe('UniswapV2Router02', () => {
     expect(await router.getAmountsIn(bigNumberify(1), path)).to.deep.eq([bigNumberify(2), bigNumberify(1)])
   })
   
-  async function addLiquidity(DTTAmount: BigNumber, WETHAmount: BigNumber) {
+  async function addLiquidity(DTTAmount: BigNumber, WNATIVEAmount: BigNumber) {
     await DTT.approve(router.address, MaxUint256)
-    await router.addLiquidityETH(DTT.address, DTTAmount, DTTAmount, WETHAmount, wallet.address, MaxUint256, {
+    await router.addLiquidityNATIVE(DTT.address, DTTAmount, DTTAmount, WNATIVEAmount, wallet.address, MaxUint256, {
       ...overrides,
-      value: WETHAmount
+      value: WNATIVEAmount
     })
   }
 
-  it('removeLiquidityETHSupportingFeeOnTransferTokens', async () => {
+  it('removeLiquidityNATIVESupportingFeeOnTransferTokens', async () => {
     const DTTAmount = expandTo18Decimals(1)
-    const ETHAmount = expandTo18Decimals(4)
-    await addLiquidity(DTTAmount, ETHAmount)
+    const NATIVEAmount = expandTo18Decimals(4)
+    await addLiquidity(DTTAmount, NATIVEAmount)
 
     const DTTInPair = await DTT.balanceOf(pair.address)
     const WGLMRInPair = await WGLMR.balanceOf(pair.address)
@@ -164,7 +164,7 @@ describe('UniswapV2Router02', () => {
     const WGLMRExpected = WGLMRInPair.mul(liquidity).div(totalSupply)
 
     await pair.approve(router.address, MaxUint256)
-    await router.removeLiquidityETHSupportingFeeOnTransferTokens(
+    await router.removeLiquidityNATIVESupportingFeeOnTransferTokens(
       DTT.address,
       liquidity,
       NaiveDTTExpected,
@@ -177,12 +177,12 @@ describe('UniswapV2Router02', () => {
   })
 
 
-  it('removeLiquidityETHWithPermitSupportingFeeOnTransferTokens', async () => {
+  it('removeLiquidityNATIVEWithPermitSupportingFeeOnTransferTokens', async () => {
     const DTTAmount = expandTo18Decimals(1)
       .mul(100)
       .div(99)
-    const ETHAmount = expandTo18Decimals(4)
-    await addLiquidity(DTTAmount, ETHAmount)
+    const NATIVEAmount = expandTo18Decimals(4)
+    await addLiquidity(DTTAmount, NATIVEAmount)
 
     const expectedLiquidity = expandTo18Decimals(2)
 
@@ -203,7 +203,7 @@ describe('UniswapV2Router02', () => {
     const WGLMRExpected = WGLMRInPair.mul(liquidity).div(totalSupply)
 
     await pair.approve(router.address, MaxUint256)
-    await router.removeLiquidityETHWithPermitSupportingFeeOnTransferTokens(
+    await router.removeLiquidityNATIVEWithPermitSupportingFeeOnTransferTokens(
       DTT.address,
       liquidity,
       NaiveDTTExpected,
@@ -223,11 +223,11 @@ describe('UniswapV2Router02', () => {
     const DTTAmount = expandTo18Decimals(5)
       .mul(100)
       .div(99)
-    const ETHAmount = expandTo18Decimals(10)
+    const NATIVEAmount = expandTo18Decimals(10)
     const amountIn = expandTo18Decimals(1)
 
     beforeEach(async () => {
-      await addLiquidity(DTTAmount, ETHAmount)
+      await addLiquidity(DTTAmount, NATIVEAmount)
     })
 
     it('DTT -> WGLMR', async () => {
@@ -245,7 +245,7 @@ describe('UniswapV2Router02', () => {
 
     // WGLMR -> DTT
     it('WGLMR -> DTT', async () => {
-      await WGLMR.deposit({ value: amountIn }) // mint WETH
+      await WGLMR.deposit({ value: amountIn }) // mint WNATIVE
       await WGLMR.approve(router.address, MaxUint256)
 
       await router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
@@ -259,16 +259,16 @@ describe('UniswapV2Router02', () => {
     })
   })
 
-  // ETH -> DTT
-  it('swapExactETHForTokensSupportingFeeOnTransferTokens', async () => {
+  // NATIVE -> DTT
+  it('swapExactNATIVEForTokensSupportingFeeOnTransferTokens', async () => {
     const DTTAmount = expandTo18Decimals(10)
       .mul(100)
       .div(99)
-    const ETHAmount = expandTo18Decimals(5)
+    const NATIVEAmount = expandTo18Decimals(5)
     const swapAmount = expandTo18Decimals(1)
-    await addLiquidity(DTTAmount, ETHAmount)
+    await addLiquidity(DTTAmount, NATIVEAmount)
 
-    await router.swapExactETHForTokensSupportingFeeOnTransferTokens(
+    await router.swapExactNATIVEForTokensSupportingFeeOnTransferTokens(
       0,
       [WGLMR.address, DTT.address],
       wallet.address,
@@ -280,18 +280,18 @@ describe('UniswapV2Router02', () => {
     )
   })
 
-  // DTT -> ETH
-  it('swapExactTokensForETHSupportingFeeOnTransferTokens', async () => {
+  // DTT -> NATIVE
+  it('swapExactTokensForNATIVESupportingFeeOnTransferTokens', async () => {
     const DTTAmount = expandTo18Decimals(5)
       .mul(100)
       .div(99)
-    const ETHAmount = expandTo18Decimals(10)
+    const NATIVEAmount = expandTo18Decimals(10)
     const swapAmount = expandTo18Decimals(1)
 
-    await addLiquidity(DTTAmount, ETHAmount)
+    await addLiquidity(DTTAmount, NATIVEAmount)
     await DTT.approve(router.address, MaxUint256)
 
-    await router.swapExactTokensForETHSupportingFeeOnTransferTokens(
+    await router.swapExactTokensForNATIVESupportingFeeOnTransferTokens(
       swapAmount,
       0,
       [DTT.address, WGLMR.address],
