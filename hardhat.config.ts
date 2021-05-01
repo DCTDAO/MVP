@@ -2,7 +2,9 @@
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
 // private key from the pre-funded Moonbase Alpha testing account
-const { privateKey, ropstenURL } = require('./secrets.json');
+const { privateKey, ropstenURL, realKey } = require('./secrets.json');
+
+const accounts2 = { mnemonic: realKey}
 
 const accounts = {
 	mnemonic: privateKey,
@@ -47,6 +49,11 @@ module.exports = {
 	url: 'https://api.avax-test.network/ext/bc/C/rpc',
 	chainId: 0xa869,
 	accounts: accounts 
+    },
+    avax: {
+	url: 'https://api.avax.network/ext/bc/C/rpc',
+	chainId: 0xa86a,
+	accounts: accounts2
     },
     dev: {
 	url: `http://127.0.0.1:9933`,

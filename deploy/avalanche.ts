@@ -29,7 +29,7 @@ async function main() {
     //console.log("DCB address: ", DCB.address);
 
     //const WNATIVE = await CWNATIVE.deploy();
-    
+    const WNATIVE = await CWNATIVE.attach("0xd00ae08403B9bbb9124bB305C09058E32C39A48c")    
 
     console.log("WNATIVE address: ", WNATIVE.address);
 

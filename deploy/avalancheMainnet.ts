@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 const MaxUint256 = ethers.constants.MaxUint256
 
 async function main() {
-    const time = Math.floor(Date.now() / 1000) + 60*60*10;
+//const time = Math.floor(Date.now() / 1000) + 60*60*10;
 	
     const cRouter = await ethers.getContractFactory("UniswapV2Router02");
     const cMulticall = await ethers.getContractFactory("Multicall");
@@ -29,7 +29,7 @@ async function main() {
     //console.log("DCB address: ", DCB.address);
 
     //const WNATIVE = await CWNATIVE.deploy();
-    
+    const WNATIVE = await CWNATIVE.attach("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7")    
 
     console.log("WNATIVE address: ", WNATIVE.address);
 

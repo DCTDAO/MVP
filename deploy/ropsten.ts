@@ -8,10 +8,10 @@ async function main() {
     const cRouter = await ethers.getContractFactory("UniswapV2Router02");
     const cMulticall = await ethers.getContractFactory("Multicall");
     const cFactory = await ethers.getContractFactory("UniswapV2Factory");
-    const cWETH = await ethers.getContractFactory("WETH");
+    const cWNATIVE = await ethers.getContractFactory("WNATIVE");
     const Token = await ethers.getContractFactory("MyERC20");
 
-    const WETHaddr = "0x02d4418c5eeb5bef366272018f7cd498179fe98b"
+    const WNATIVEaddr = "0x02d4418c5eeb5bef366272018f7cd498179fe98b"
 
     const [deployer] = await ethers.getSigners();
     console.log("Deploying contracts with the account:",
@@ -30,9 +30,9 @@ async function main() {
     console.log("DCA address: ", DCA.address);
     console.log("DCB address: ", DCB.address);
 
-    const WETH = await cWETH.attach(WETHaddr);
+    const WNATIVE = await cWNATIVE.attach(WNATIVEaddr);
 
-    console.log("WETH address: ", WETH.address);
+    console.log("WNATIVE address: ", WNATIVE.address);
 
     const factory = await cFactory.deploy(deployer.address);
 
@@ -40,7 +40,7 @@ async function main() {
     const INIT_HASH = await factory.pairCodeHash();
     console.log("INIT_HASH: ", INIT_HASH);
 
-    const router = await cRouter.deploy(factory.address, WETH.address);
+    const router = await cRouter.deploy(factory.address, WNATIVE.address);
 
     console.log("Router address: ", router.address);
 
