@@ -1,11 +1,12 @@
 # MVP
 
 ## Before
-Create a new file secrets.json and add your MNEMONIC
+Create a new file secrets.json and add your MNEMONIC "privateKey" for testnets and realKey (mnemonic) for AVAX mainet.
 
       {
           "privateKey": "YOUR-MNEMONIC",
-          "ropstenURL": "<infure wss rpc to ropsten>"
+          "ropstenURL": "<infure wss rpc to ropsten>",
+	  "realKey": ""
       }
 
 

@@ -1,6 +1,7 @@
 // ethers plugin required to interact with the contract
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
+import "hardhat-abi-exporter";
 // private key from the pre-funded Moonbase Alpha testing account
 const { privateKey, ropstenURL, realKey } = require('./secrets.json');
 
@@ -20,9 +21,13 @@ module.exports = {
       }
     }
   },
-
-
-
+abiExporter: {
+  path: './data/abi',
+  clear: true,
+  flat: true,
+  only: ['UniswapV2Pair','UniswapV2Factory'],
+  spacing: 2
+},
   networks: {
     // Moonbase Alpha network specification
     moonbase: {
